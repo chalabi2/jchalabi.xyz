@@ -35,17 +35,17 @@ export function CodeBlock({
   const style = isDark ? coldarkDark : coldarkCold;
 
   return !inline && language ? (
-    <div className="rounded-lg overflow-hidden bg-muted dark:bg-muted">
+    <div className="overflow-hidden rounded-lg">
       <SyntaxHighlighter
-        // @ts-expect-error - Style type incompatibility with react-syntax-highlighter
+        // @ts-expect-error - Known type issue with react-syntax-highlighter
         style={style}
         language={language}
         PreTag="div"
         customStyle={{
-          background: "transparent",
           padding: "1rem",
           margin: 0,
           borderRadius: "0.5rem",
+          background: "transparent",
         }}
         {...props}
       >

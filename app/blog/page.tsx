@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { getAllPosts, formatDate, calculateReadingTime } from "@/lib/mdx";
-import SimpleGeometricIcon from "@/components/SimpleGeometricIcon";
+import Image from "next/image";
 
 export default function Blog() {
   const posts = getAllPosts();
@@ -27,11 +27,12 @@ export default function Blog() {
               <div className="grid grid-cols-1 md:grid-cols-2">
                 <div className="relative h-64 md:h-auto">
                   <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-primary/10 to-primary/5">
-                    <SimpleGeometricIcon
-                      seed={featuredPost.frontmatter.title || featuredPost.slug}
-                      width="100%"
-                      height="100%"
-                      style={{ opacity: 0.9 }}
+                    <Image
+                      src={`/blog/${featuredPost.slug}.jpg`}
+                      alt={featuredPost.frontmatter.title}
+                      fill
+                      className="object-cover"
+                      priority
                     />
                   </div>
                 </div>
@@ -85,11 +86,12 @@ export default function Blog() {
                 >
                   <div className="relative h-48">
                     <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-primary/10 to-primary/5">
-                      <SimpleGeometricIcon
-                        seed={post.frontmatter.title || post.slug}
-                        width="100%"
-                        height="100%"
-                        style={{ opacity: 0.9 }}
+                      <Image
+                        src={`/blog/${post.slug}.jpg`}
+                        alt={post.frontmatter.title}
+                        fill
+                        className="object-cover"
+                        priority
                       />
                     </div>
                   </div>

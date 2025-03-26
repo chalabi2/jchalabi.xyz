@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
   getPostBySlug,
@@ -9,10 +10,11 @@ import {
   calculateReadingTime,
 } from "@/lib/mdx";
 import ReactMarkdown from "react-markdown";
-
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
+import fs from "fs";
+import path from "path";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
-import SimpleGeometricIcon from "@/components/SimpleGeometricIcon";
 
 // This function runs at build time
 export async function generateStaticParams() {
@@ -108,6 +110,14 @@ export default async function PostPage({
       notFound();
     }
 
+    // Check if a blog image exists for this post
+    const imagePath = `/blog/${post.slug}.jpg`;
+    const publicImagePath = path.join(process.cwd(), "public", imagePath);
+    const hasImage = fs.existsSync(publicImagePath);
+
+    // Process custom components in MDX content
+    const processedContent = processCustomComponents(post.content);
+
     return (
       <div className="min-h-screen pt-24 pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -142,22 +152,34 @@ export default async function PostPage({
               )}
             </div>
 
-            <div className="h-64 md:h-80 lg:h-96 mb-8 rounded-lg overflow-hidden">
-              <SimpleGeometricIcon
-                seed={post.frontmatter.title}
-                className="w-full h-full"
-              />
+            <div className="h-64 md:h-80 lg:h-96 mb-8 rounded-lg overflow-hidden relative">
+              {hasImage ? (
+                <Image
+                  src={imagePath}
+                  alt={post.frontmatter.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-r from-primary/30 to-secondary/30 flex items-center justify-center">
+                  <h2 className="text-2xl font-bold text-foreground/70">
+                    {post.frontmatter.title}
+                  </h2>
+                </div>
+              )}
             </div>
           </div>
 
-          <article className="prose prose-lg dark:prose-invert max-w-none border-b pb-8">
+          <article className="prose prose-lg dark:prose-invert max-w-none border-b pb-8 prose-pre:bg-muted prose-pre:p-0">
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
               components={{
                 code: CodeBlock,
               }}
             >
-              {post.content}
+              {processedContent}
             </ReactMarkdown>
           </article>
         </div>
@@ -167,4 +189,41 @@ export default async function PostPage({
     console.error(`Error rendering post page`, error);
     notFound();
   }
+}
+
+/**
+ * Process custom component syntax in MDX and convert to HTML
+ * This allows ReactMarkdown to render our custom components
+ */
+function processCustomComponents(content: string): string {
+  // Process YouTubeEmbed components
+  const youtubeRegex =
+    /<YouTubeEmbed\s+videoId="([^"]+)"(?:\s+title="([^"]+)")?(?:\s+width="([^"]+)")?(?:\s+height="([^"]+)")?\s*\/>/g;
+
+  return content.replace(
+    youtubeRegex,
+    (
+      match,
+      videoId,
+      title = "YouTube video player",
+      width = "560",
+      height = "315"
+    ) => {
+      return `<div class="relative w-full my-8">
+      <div class="relative pb-[56.25%] h-0 overflow-hidden max-w-full">
+        <iframe
+          class="absolute top-0 left-0 w-full h-full rounded-lg"
+          width="${width}"
+          height="${height}"
+          src="https://www.youtube.com/embed/${videoId}"
+          title="${title}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>`;
+    }
+  );
 }

@@ -1,0 +1,248 @@
+---
+title: Cosmos User Authentication
+description: A design guide and tutorial for using cosmos blockchains to authenticate user accounts.
+date: 2025-03-25
+tags: [blockchain, auth]
+published: true
+---
+
+# Cosmos User Auth
+
+A dive into using web2 auth tools to authenticate users on web3 platforms.
+
+## Web2 Auth
+
+Web2 auth has reached a point where there are many tools that provide easy DX and sleek UX. [BetterAuth](https://www.better-auth.com/), [Open Auth](https://openauth.js.org/), [Clerk](https://clerk.com/), and my personal favorite [AuthJS]() (formerly nextauth).
+
+Most of the options in this list are open source and free to use or very affordable, providing many features. I watched a great video about this topic by Theo from T3, who weighed the pros and cons of different tools. His conclusion was that if you want to avoid the headache of building your own auth system and cluttering your database with user data, you have some good options.
+
+<YouTubeEmbed videoId="lxslnp-ZEMw" title="Theo's Auth Video" />
+
+## Web3 Auth
+
+Web3 auth faces different challenges. While there are some open-source and free options, they aren't as mature as their Web2 counterparts.
+
+With the most popular options include [Privy](https://www.privy.io/), [thirdweb](https://thirdweb.com/), and newer offerings like [Para](https://www.getpara.com/). Para is the only option in that list that includes Cosmos networks, but all of them are paid services with relatively generous free tiers.
+
+These solutions aren't strictly limited to providing auth services—they include wallet connection, transaction building, signing, and more. It would be unfair to compare them directly to libraries built specifically for auth, but these comprehensive tools are what we currently have in the Web3 space.
+
+## Combining the two
+
+Now that we have a better understanding of the different options, let's dive into how we can combine Web2 auth tools with web3 wallets to authenticate users on Web3 platforms, specifically on Cosmos networks.
+
+### Setup
+
+#### AuthJS
+
+In this tutorial we will be using [AuthJS](https://authjs.dev/). This requires setting up a database and a server. The database and server setup won't be covered in this tutorial, so to learn more about that, you can refer to the [AuthJS docs](https://authjs.dev/getting-started/introduction).
+
+I personally utilize [Postgres](https://www.postgresql.org/) as my database and [Prisma](https://www.prisma.io/) as my ORM.
+
+#### NextJS
+
+The example code provided was written in TypeScript using the latest version of NextJS. Though AuthJS is compatible with various frameworks, and the core functionality of the code examples can be extrapolated to other frameworks.
+
+### Sign Arbitrary
+
+If you're reading this, you're probably familiar with Cosmos blockchain concepts, so we won't dive too deep into the details of the SDK.
+
+Cosmos SDK introduced the functionality of signing arbitrary messages in version 0.46. This allows users to sign messages with arbitrary data and then validate the signature offline, similar to what [EIP-4361](in.xyz/general-information/siwe-overview/eip-4361) did for Ethereum.
+
+In Cosmos, using any wallet that supports it, we can utilize the methods introduced in [ADR 036](https://docs.cosmos.network/main/build/architecture/adr-036-arbitrary-signature) to sign said arbitrary messages.
+
+#### Examples
+
+##### Building the arbitrary signer
+
+Building signers in Cosmos can be a bit tricky but there are many libraries that can help us out. From wallet connection to signing messages one I personally use is Hyperweb's [cosmos-kit](https://github.com/hyperweb3/cosmos-kit) or more recently [interhcain-kit](https://github.com/hyperweb3/interchain-kit) paired with [interchainjs](https://github.com/hyperweb3/cosmos-kit).
+
+When using interchainjs we can rely on their [auth](https://github.com/hyperweb-io/interchainjs/blob/main/packages/auth/README.md) package to handle a lot of this for us.
+
+If you want something more lightweight, you can use [graz](https://graz.sh/). Graz is solid for connecting wallets and signing messages, but it requires more setup. You might also encounter difficulties including the amino converters and proto registries required for passing the `sign/MsgSignData` message to the offline signers graz provides.
+
+##### Signing a message
+
+```ts
+/**
+ * Utilizing functions from SIWE we can assign a
+ * nonce to the signed message to prevent replay
+ * attacks
+ * */
+const nonce = await getCsrfToken();
+if (!nonce) {
+  toast.error("Authentication error: Failed to get security token");
+  throw new Error("Failed to get CSRF token");
+}
+
+// Extract the bech32 prefix from the address (e.g., "cosmos" from "cosmos1...")
+const prefix = address.substring(0, address.indexOf("1"));
+
+// Create a message for signing (including nonce for security)
+const message = `Sign in with your Cosmos account.\n\nNonce: ${nonce}\nTime: ${new Date().toISOString()}\nAddress: ${address}`;
+
+const base64Data = Buffer.from(message).toString("base64");
+
+const signDoc: StdSignDoc = {
+  chain_id: "",
+  account_number: "0",
+  sequence: "0",
+  fee: { gas: "0", amount: [] },
+  memo: "",
+  msgs: [
+    {
+      type: "sign/MsgSignData",
+      value: {
+        signer: address ?? "",
+        data: base64Data,
+      },
+    },
+  ],
+};
+
+const result = await signArbitrary(message);
+```
+
+This example shows how we build the sign doc and pass it to the `signArbitrary` function.
+
+### AuthJS Credential Provider
+
+Now that we have a way to sign arbitrary messages, we can use AuthJS to authenticate users.
+
+Using the credential provider similarly to the SIWE [examples](https://docs.login.xyz/integrations/nextauth.js), we can create a custom credential provider that takes the message content of the arbitrary message, validates the signature, and returns the user's address.
+
+#### Example
+
+authjs cosmos credential provider config
+
+```ts
+CredentialsProvider({
+    name: "Cosmos Wallet",
+    id: "cosmos",
+    credentials: {
+      chainId: {
+        label: "Chain ID",
+        type: "text",
+      },
+      address: {
+        label: "Address",
+        type: "text",
+      },
+      message: {
+        label: "Message",
+        type: "text",
+      },
+      signature: {
+        label: "Signature",
+        type: "text",
+      },
+      pubKey: {
+        label: "Public Key",
+        type: "text",
+      },
+    },
+    async authorize(credentials) {
+      try {
+
+
+        // Get address and credentials with type safety - credentials is defined by NextAuth CredentialsProvider
+        let address: string;
+        let message: string;
+        let chainId: string;
+
+
+
+        try {
+          // Parse the signature and pubKey with proper type handling
+          let signatureB64: string;
+          let pubKeyB64: string;
+
+          // Handle signature
+          if (typeof credentials.signature === 'string') {
+            try {
+              // If it's a JSON string, try to parse it
+              const parsed = JSON.parse(credentials.signature) as unknown;
+              if (typeof parsed === 'string') {
+                signatureB64 = parsed;
+              } else {
+                // If it's parsed but not a string, use the original
+                signatureB64 = credentials.signature;
+              }
+            } catch (e) {
+              // If not valid JSON, use as is
+              signatureB64 = credentials.signature;
+            }
+          } else {
+            console.error("Invalid signature format: expected string");
+            return null;
+          }
+
+          // Handle pubKey
+          if (typeof credentials.pubKey === 'string') {
+            try {
+              // If it's a JSON string, try to parse it
+              const parsed = JSON.parse(credentials.pubKey) as unknown;
+              if (typeof parsed === 'string') {
+                pubKeyB64 = parsed;
+              } else {
+                // If it's parsed but not a string, use the original
+                pubKeyB64 = credentials.pubKey;
+              }
+            } catch (e) {
+              // If not valid JSON, use as is
+              pubKeyB64 = credentials.pubKey;
+            }
+          } else {
+            console.error("Invalid pubKey format: expected string");
+            return null;
+          }
+
+          // Verify the signature using verifyADR36Amino
+          const pubKeyBytes = fromBase64(pubKeyB64);
+          const signatureBytes = fromBase64(signatureB64);
+
+          // Extract the prefix from the Cosmos address (e.g., "cosmos" from "cosmos1...")
+          const prefix = address.substring(0, address.indexOf("1"));
+
+          // Verify the signature using verifyADR36Amino with correct parameter types
+          const isValid = verifyADR36Amino(
+            prefix,                // bech32 prefix
+            address,              // full address
+            message,              // original message
+            pubKeyBytes,          // public key as Uint8Array
+            signatureBytes,       // signature as Uint8Array
+            "secp256k1"           // default algorithm
+          );
+
+
+          if (!isValid) {
+            console.error("Cosmos signature verification failed");
+            return null;
+          }
+
+        } catch (e) {
+          console.error("Cosmos signature verification error:", e);
+          return null;
+        }
+      } catch (e) {
+        console.error("Cosmos authorize error:", e);
+        return null;
+      }
+    },
+  }),
+```
+
+This example shows how we can create a custom credential provider that takes the message content of the arbitrary message, validates the signature, and returns the user's address. Much of the error handling was omitted for brevity, but you can see how we handle the credentials and verify the signature.
+
+We rely on the `verifyADR36Amino` function to verify the signature. Fortunately, Keplr provides this [function](https://docs.keplr.app/api/guide/sign-arbitrary#verifyarbitrary), although you could build your own implementation as well.
+
+Keep in mind we use amino messages and signers to maintain ledger support. You could use a direct signer with changes to the implementation, but you will lose ledger support, so it is not recommended.
+
+### Conclusion
+
+Now with a basic AuthJS database setup, you can handle user creation and authentication for Web3 platforms, specifically on Cosmos networks.
+
+This approach is quite in-depth but allows seamless access to your applications for Web3 Cosmos users. Alongside a SIWE credential provider, you can deliver a consistent experience for your users regardless of the network or wallet they use.
+
+Be sure to check out my blog for more tutorials and content, with in-depth guides on utilizing Hyperweb's new tools and libraries.
+
+I hope this tutorial was helpful, and if you have any questions or feedback, please reach out to me on [X](https://x.com/chalabi__) or send a [contact message](https://jchalabi.xyz/contact).
