@@ -91,7 +91,7 @@ const SpaceModel = React.forwardRef<THREE.Group>((props, ref) => {
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} rotation={[0, 0, 0]}>
       {scene && <primitive object={scene} dispose={null} />}
     </group>
   );

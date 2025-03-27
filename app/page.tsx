@@ -51,14 +51,29 @@ export default function Home() {
         {/* Attribution tooltip */}
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger asChild>
-              <button className="absolute bottom-3 right-3 z-20 dark:text-white/50 dark:hover:text-white/80 text-black/50 hover:text-black/80 transition-colors pointer-events-auto">
+            <TooltipTrigger
+              asChild
+              onClick={(e) => {
+                // Prevent the click from immediately closing the tooltip
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+            >
+              <button
+                className="absolute bottom-3 right-3 z-20 dark:text-white/50 dark:hover:text-white/80 text-black/50 hover:text-black/80 transition-colors pointer-events-auto"
+                role="button"
+                aria-label="View attribution"
+              >
                 <InfoIcon size={18} />
               </button>
             </TooltipTrigger>
             <TooltipContent
               side="left"
               className="max-w-xs bg-black/80 border-gray-800 text-white/90"
+              onPointerDownOutside={(e) => {
+                // Prevent the tooltip from closing when clicking inside
+                e.preventDefault();
+              }}
             >
               <div className="text-xs">
                 <p>
