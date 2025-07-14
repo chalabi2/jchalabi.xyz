@@ -51,7 +51,8 @@ const projectConfig: ProjectConfig = {
     "manifestjs",
     "neons-refund",
     "peer-visualizer",
-    "ccr-ui"
+    "ccr-ui",
+    "LFP"
   ],
   featured: [
     "gravity-info-api",
@@ -59,6 +60,7 @@ const projectConfig: ProjectConfig = {
     "manifest-app",
     "skip-go-fast-solver-ui",
     "quicksilver",
+    "LFP"
   ],
   customData: {
     "gravity-info-api": {
@@ -128,6 +130,11 @@ const projectConfig: ProjectConfig = {
       tags: ["Typescript", "Next.js", "Cosmos", "EVM", "Redis", "Postgres", "Caddy"],
       category: ["frontend", "backend"],
       demoUrl: "https://chandra-app.vercel.app/"
+    },
+    "LFP": {
+      description: "Scraper built to find all peers on cosmos L1 chains.",
+      tags: ["Rust", "Cosmos"],
+      category: ["backend"]
     }
   }
 };
