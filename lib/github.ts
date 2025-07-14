@@ -39,6 +39,7 @@ const octokit = new Octokit({
 const projectConfig: ProjectConfig = {
   allowList: [
     "gravity-info-api",
+    "chandra-station-app",
     "manifest-app",
     "skip-go-fast-solver-ui",
     "auction-frontend",
@@ -54,6 +55,7 @@ const projectConfig: ProjectConfig = {
   ],
   featured: [
     "gravity-info-api",
+    "chandra-station-app",
     "manifest-app",
     "skip-go-fast-solver-ui",
     "quicksilver",
@@ -120,6 +122,12 @@ const projectConfig: ProjectConfig = {
       tags: ["Typescript", "EVM", "WAGMI"],
       category: ["frontend"],
       demoUrl: "https://chalabi2.github.io/ccr-ui/"
+    },
+    "chandra-station-app": {
+      description: "Chandra Station's webapp and internal infrastructure to support public and private RPC nodes for both Cosmos and EVM chains.",
+      tags: ["Typescript", "Next.js", "Cosmos", "EVM", "Redis", "Postgres", "Caddy"],
+      category: ["frontend", "backend"],
+      demoUrl: "https://chandra-app.vercel.app/"
     }
   }
 };
