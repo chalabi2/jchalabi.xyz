@@ -135,6 +135,21 @@ const projectConfig: ProjectConfig = {
 // Define private projects that aren't available on GitHub
 export const privateProjects: Project[] = [
   {
+    id: "Chandra Station App",
+    title: "chandra-station-app",
+    description: "Chandra Station's webapp and internal infrastructure to support public and private RPC nodes for both Cosmos and EVM chains.",
+    repoUrl: "#", // Placeholder URL
+    tags: ["Typescript", "Next.js", "Cosmos", "EVM", "Redis", "Postgres", "Caddy"],
+    date: new Date().toISOString(),
+    featured: true,
+    owner: "chalabi2",
+    language: "Typescript",
+    stars: 0,
+    category: ["frontend", "backend"],
+    demoUrl: "https://chandra-app.vercel.app/",
+    isPrivate: true
+  },
+  {
     id: "althea-link-frontend",
     title: "althea-link-frontend",
     description: "Althea link is the webapp for the Althea L1. Cosmos and Evm signing allowing users to interact with the iFi dex, bridge, governance, staking and more.",
