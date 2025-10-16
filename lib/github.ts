@@ -153,7 +153,7 @@ export const privateProjects: Project[] = [
     language: "Typescript",
     stars: 0,
     category: ["frontend", "backend"],
-    demoUrl: "https://chandra-app.vercel.app/",
+    demoUrl: "https://www.chandrastation.com/",
     isPrivate: true
   },
   {
