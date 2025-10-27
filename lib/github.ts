@@ -52,7 +52,10 @@ const projectConfig: ProjectConfig = {
     "neons-refund",
     "peer-visualizer",
     "ccr-ui",
-    "LFP"
+    "LFP",
+    "caddy-blockchain-health",
+    "prop-voter",
+    "caddy-stateful-jwt-auth",
   ],
   featured: [
     "gravity-info-api",
@@ -60,6 +63,7 @@ const projectConfig: ProjectConfig = {
     "manifest-app",
     "skip-go-fast-solver-ui",
     "quicksilver",
+     "caddy-blockchain-health",
     "LFP"
   ],
   customData: {
@@ -135,7 +139,13 @@ const projectConfig: ProjectConfig = {
       description: "Scraper built to find all peers on cosmos L1 chains.",
       tags: ["Rust", "Cosmos"],
       category: ["backend"]
-    }
+    },
+    "caddy-stateful-jwt-auth": {
+      description: "A fork of the caddy-jwt-auth module that allows for stateful JWT authentication via redis.",
+      tags: ["Go", "Caddy"],
+      category: ["backend"]
+    },
+
   }
 };
 
