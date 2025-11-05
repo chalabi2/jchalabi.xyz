@@ -56,6 +56,7 @@ const projectConfig: ProjectConfig = {
     "caddy-blockchain-health",
     "prop-voter",
     "caddy-stateful-jwt-auth",
+    "caddy-dynamic-timeouts",
     "twap-tax"
   ],
   featured: [
@@ -64,7 +65,7 @@ const projectConfig: ProjectConfig = {
     "manifest-app",
     "skip-go-fast-solver-ui",
     "quicksilver",
-     "caddy-blockchain-health",
+    "caddy-blockchain-health",
     "LFP"
   ],
   customData: {
