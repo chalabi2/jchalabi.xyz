@@ -56,6 +56,7 @@ const projectConfig: ProjectConfig = {
     "caddy-blockchain-health",
     "prop-voter",
     "caddy-stateful-jwt-auth",
+    "twap-tax"
   ],
   featured: [
     "gravity-info-api",
@@ -138,6 +139,11 @@ const projectConfig: ProjectConfig = {
     "LFP": {
       description: "Scraper built to find all peers on cosmos L1 chains.",
       tags: ["Rust", "Cosmos"],
+      category: ["backend"]
+    },
+    "twap-tax": {
+      description: "Backend that utilizes hyperliquid's historical S3 bucket to find your TWAP trades.",
+      tags: ["Typescript", "Hyperliquid"],
       category: ["backend"]
     },
     "caddy-stateful-jwt-auth": {
