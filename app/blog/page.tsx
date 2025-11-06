@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { buildOgAndTwitter, getMetaForPath } from "@/lib/seo";
 import Link from "next/link";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -132,3 +134,14 @@ export default function Blog() {
     </div>
   );
 }
+
+export const metadata: Metadata = (() => {
+  const pathname = "/blog";
+  const meta = getMetaForPath(pathname);
+  const og = buildOgAndTwitter(pathname, meta);
+  return {
+    title: meta.title ?? "Blog",
+    description: meta.description,
+    ...og,
+  };
+})();

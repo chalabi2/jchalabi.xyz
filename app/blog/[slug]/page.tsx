@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { Calendar, Clock, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -15,6 +16,7 @@ import rehypeRaw from "rehype-raw";
 import fs from "fs";
 import path from "path";
 import { CodeBlock } from "@/components/markdown/CodeBlock";
+import { buildOgAndTwitter } from "@/lib/seo";
 
 // This function runs at build time
 export async function generateStaticParams() {
@@ -49,8 +51,10 @@ export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
-}) {
-  if (!params) {
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+
+  if (!resolvedParams?.slug) {
     return {
       title: "Post Not Found",
       description: "The requested post could not be found.",
@@ -58,8 +62,7 @@ export async function generateMetadata({
   }
 
   try {
-    // Get the post data
-    const { slug } = await params;
+    const { slug } = resolvedParams;
 
     // If it's an image file, return early with a not found page metadata
     if (isImageFile(slug)) {
@@ -71,9 +74,21 @@ export async function generateMetadata({
 
     const post = getPostBySlug(slug);
 
+    const pathname = `/blog/${slug}`;
+    const og = buildOgAndTwitter(pathname, {
+      title: "Blog",
+      description: post.frontmatter.title,
+      ogImageAlt: post.frontmatter.title,
+    });
+
     return {
-      title: post.frontmatter.title,
-      description: post.frontmatter.description,
+      title: "Blog",
+      description: post.frontmatter.title,
+      ...og,
+      openGraph: {
+        ...og.openGraph,
+        type: "article",
+      },
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
@@ -90,13 +105,14 @@ export default async function PostPage({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  if (!params) {
+  const resolvedParams = await params;
+
+  if (!resolvedParams?.slug) {
     notFound();
   }
 
   try {
-    // Get the post data
-    const { slug } = await params;
+    const { slug } = resolvedParams;
 
     // If it's an image file, return a 404 page
     if (isImageFile(slug)) {

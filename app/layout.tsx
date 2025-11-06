@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { defaultMeta } from "@/lib/seo";
 
 import "./globals.css";
 import "./prism.css";
@@ -10,8 +11,38 @@ import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
-  title: "Joseph Chalabi | Portfolio",
-  description: "Portfolio website showcasing my projects and skills",
+  metadataBase: new URL(defaultMeta.url),
+  title: {
+    default: defaultMeta.title,
+    template: "%s | " + defaultMeta.title,
+  },
+  description: defaultMeta.description,
+  keywords: defaultMeta.keywords,
+  openGraph: {
+    type: "website",
+    url: defaultMeta.url,
+    siteName: defaultMeta.siteName,
+    title: defaultMeta.title,
+    description: defaultMeta.description,
+    images: [
+      {
+        url: defaultMeta.ogImagePath,
+        width: 1200,
+        height: 630,
+        alt: defaultMeta.title,
+      },
+    ],
+    locale: defaultMeta.locale,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: defaultMeta.title,
+    description: defaultMeta.description,
+    images: [defaultMeta.ogImagePath],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 const berkleyMono = localFont({
