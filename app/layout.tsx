@@ -10,6 +10,10 @@ import localFont from "next/font/local";
 
 import { Toaster } from "@/components/ui/sonner";
 
+const ogImageUrl = `${defaultMeta.url}/api/og?title=${encodeURIComponent(
+  defaultMeta.title
+)}&description=${encodeURIComponent(defaultMeta.description)}`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(defaultMeta.url),
   title: {
@@ -26,7 +30,7 @@ export const metadata: Metadata = {
     description: defaultMeta.description,
     images: [
       {
-        url: defaultMeta.ogImagePath,
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: defaultMeta.title,
@@ -38,7 +42,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: defaultMeta.title,
     description: defaultMeta.description,
-    images: [defaultMeta.ogImagePath],
+    images: [ogImageUrl],
   },
   icons: {
     icon: "/favicon.ico",

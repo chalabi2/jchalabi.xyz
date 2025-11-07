@@ -6,7 +6,7 @@ export type RouteMeta = {
 
 export const defaultMeta = {
   title: "Joseph Chalabi",
-  siteName: "Joseph Chalabi",
+  siteName: "jchalabi.xyz",
   description: "Portfolio website showcasing my projects and skills",
   url:
     (process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") as string) ||
@@ -73,7 +73,11 @@ export function getMetaForPath(pathname: string): RouteMeta {
 export function buildOgAndTwitter(pathname: string, meta: RouteMeta) {
   const siteUrl = defaultMeta.url;
   const canonical = `${siteUrl}${pathname}`;
-  const ogImageUrl = `${siteUrl}${defaultMeta.ogImagePath}`;
+  
+  const title = meta.title ?? defaultMeta.title;
+  const description = meta.description ?? defaultMeta.description;
+  
+  const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(title)}&description=${encodeURIComponent(description)}`;
   const ogImageAlt = meta.ogImageAlt ?? meta.title ?? defaultMeta.title;
 
   return {
@@ -82,8 +86,8 @@ export function buildOgAndTwitter(pathname: string, meta: RouteMeta) {
       type: "website" as const,
       url: canonical,
       siteName: defaultMeta.siteName,
-      title: meta.title ?? defaultMeta.title,
-      description: meta.description ?? defaultMeta.description,
+      title,
+      description,
       images: [
         {
           url: ogImageUrl,
@@ -96,8 +100,8 @@ export function buildOgAndTwitter(pathname: string, meta: RouteMeta) {
     },
     twitter: {
       card: "summary_large_image" as const,
-      title: meta.title ?? defaultMeta.title,
-      description: meta.description ?? defaultMeta.description,
+      title,
+      description,
       images: [ogImageUrl],
     },
   };
