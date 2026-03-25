@@ -26,12 +26,12 @@ export default function DemoPreview({
   // Use a more reliable screenshot service
   // We're using Microlink which is a popular service for generating screenshots
   const screenshotUrl = `https://api.microlink.io/?url=${encodeURIComponent(
-    demoUrl
+    demoUrl,
   )}&screenshot=true&meta=false&embed=screenshot.url`;
 
   // Alternative screenshot URL using a different service as fallback
   const fallbackScreenshotUrl = `https://image.thum.io/get/width/1200/crop/800/viewportWidth/1200/png/${encodeURIComponent(
-    demoUrl
+    demoUrl,
   )}`;
 
   // Reset error state when changing tabs
@@ -131,7 +131,7 @@ export default function DemoPreview({
                 size="sm"
                 onClick={() => {
                   const tab = document.querySelector(
-                    '[data-value="screenshot"]'
+                    '[data-value="screenshot"]',
                   ) as HTMLElement;
                   if (tab) tab.click();
                 }}
@@ -163,7 +163,7 @@ export default function DemoPreview({
               const fallbackImg = new Image();
               fallbackImg.onload = () => {
                 const imgElement = document.querySelector(
-                  "[data-screenshot-img]"
+                  "[data-screenshot-img]",
                 ) as HTMLImageElement;
                 if (imgElement) {
                   imgElement.src = fallbackScreenshotUrl;

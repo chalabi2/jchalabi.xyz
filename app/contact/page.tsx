@@ -223,7 +223,7 @@ export default function Contact() {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground mb-4">
-                  I&apos;m currently available for freelance work and new
+                  I&apos;m currently unavailable for freelance work and new
                   projects. My typical response time is within 24 hours.
                 </p>
                 <div className="bg-muted/30 p-4 rounded-md">
