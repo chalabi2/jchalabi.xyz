@@ -265,10 +265,15 @@ const ThreeScene = () => {
         gl={{
           antialias: true,
           alpha: true,
-          powerPreference: "high-performance",
-          precision: "highp",
+          // "default" lets the browser/OS pick the GPU and avoid CGL FBO
+          // failures on macOS when requesting the discrete GPU unconditionally.
+          powerPreference: "default",
+          precision: "mediump",
           stencil: false,
           depth: true,
+          // Allow the browser to fall back to software rendering rather than
+          // throwing when the hardware context can't be created.
+          failIfMajorPerformanceCaveat: false,
         }}
         dpr={[1, 2]}
         camera={{ fov: 60 }}
