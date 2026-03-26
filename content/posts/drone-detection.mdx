@@ -1,45 +1,53 @@
 ---
-title: Drone Detection at an Air Force Base
-description: How I used an RF sensor and custom software to help ******* PD detect and intercept drones in restricted airspace during an air show.
+title: Drone Detection in Restricted Airspace
+description: How passive RF sensing and lightweight software can help detect drones during large public events.
 date: 2026-03-25
-tags: [drones, radar, detection, ai]
+tags: [drones, rf, detection, ai]
 published: false
 ---
 
-# Drone Detection at an Air Force Base
+# Drone Detection in Restricted Airspace
 
-I had the opportunity to work on something I didn't expect to find myself doing, real-time drone detection in restricted airspace, alongside the ******* Police Department and **** Air Force Base.
+I had the opportunity to work on something I didn’t expect to find myself doing — real-time drone detection in restricted airspace, alongside public safety and defense environments.
 
 ## The Problem
 
-Air shows generate a lot of enthusiasm, and with that comes a lot of people flying consumer drones in places they absolutely shouldn't be. **** AFB operates under strict airspace restrictions, and during an air show those restrictions extend to a 5-mile no-fly zone around the base. Despite that, drones were entering the zone during the event and neither local law enforcement nor base personnel had a reliable way to detect them in real time, let alone locate their operators on the ground.
+Large public events generate a lot of enthusiasm, and with that comes people flying consumer drones in places they absolutely shouldn’t be. In restricted airspace scenarios, especially around sensitive locations, that becomes a real problem quickly.
 
-The obvious instinct is to reach for radar. It's the gold standard for airspace monitoring, and most people, including myself, assume it's already in place everywhere. What I learned is that for a temporary deployment in a public environment, radar isn't as straightforward as it sounds. Getting FCC approval to actively transmit in a crowded public space turned out to be a slow, bureaucratic process that wasn't going to move at the pace the situation required. That gap is what created the opportunity to try a different approach.
+Despite that, a lot of teams on the ground don’t have a reliable way to detect drones in real time, let alone locate their operators. The assumption is usually that radar solves this, and while it can, deploying radar in a temporary public environment isn’t always practical. Regulatory constraints and setup time make it difficult to use in situations that require something fast and flexible.
+
+That gap is what creates space for alternative approaches.
 
 ## The Approach
 
-The solution I worked on centered around a passive RF sensor, a receiver that listens for the radio frequency signals consumer drones use to communicate with their controllers, without transmitting anything itself. Because it's purely passive, it sidesteps the FCC authorization problem entirely.
+The approach I worked on centered around passive RF sensing. Instead of transmitting, the system listens for the radio signals that drones and their controllers already emit.
 
-On top of the sensor hardware, I built software to process and filter the incoming detection data. Raw RF data from a busy environment like an air show is noisy, there are a lot of signals flying around that aren't drones, and even legitimate drone detections need to be triaged by proximity, signal strength, and position relative to the restricted zone. The software filtered those detections down to actionable alerts and displayed confirmed drone positions on a map interface that officers could use in the field.
+Because it’s passive, it avoids the need for spectrum authorization and can be deployed quickly in environments where active systems would be harder to justify.
 
-When a drone was flagged inside the no-fly zone, officers could pull up the map, see where the signal was coming from, and navigate directly to the operator on the ground. In practice, most consumer drones broadcast enough metadata in their RF signal, including Remote ID where supported, that you can narrow down the operator's location to within a reasonably small area, enough for a responding officer to work with.
+On top of the sensor, I worked on software to process and filter incoming detections. Raw RF environments are noisy, especially at large events. The goal was to reduce that noise into something actionable by prioritizing detections based on signal characteristics and relevance to the area of interest.
+
+The result was a simple interface that allowed operators to visualize detections on a map and focus on what actually mattered. When something showed up in a restricted area, it gave responders a starting point to investigate and act.
 
 ## What Surprised Me
 
-The part that genuinely caught me off guard was how early-stage this problem still is at the local law enforcement level. I went in assuming that departments near major military installations, particularly one as prominent as **** AFB, would already have some form of drone detection tooling in place. They don't, at least not in any standardized way.
+What stood out the most was how early-stage this problem still is in many real-world environments.
 
-The drone threat isn't hypothetical, it's already showing up at events, near critical infrastructure, and in airspace where manned aircraft operate. The technology to address it exists and isn't particularly exotic. But the procurement pipeline, regulatory friction, and institutional inertia mean that a lot of departments are still figuring out what to do when a drone shows up where it shouldn't be.
-
-What makes that gap stranger is that a regulatory framework already exists for exactly this problem. The FAA's Remote ID rule has been in effect since 2023, requiring most commercially sold drones to broadcast identifying information in real time. In theory that gives law enforcement a standardized, passive data stream to work with. In practice, most departments have no tooling to receive or act on it.
+The need is obvious. Drones are already showing up near sensitive locations and crowded events. The technology to detect them exists and isn’t particularly exotic. But between procurement timelines, regulatory friction, and lack of standardized tooling, there’s still a gap between what’s possible and what’s actually deployed.
 
 ## Remote ID
 
-Remote ID is the FAA's broadcast identification standard for drones, roughly analogous to an ADS-B transponder for manned aircraft. Compliant drones continuously broadcast their serial number, GPS position, altitude, velocity, and the operator's takeoff location over a short-range radio link.
+Part of the reason this works at all is Remote ID.
 
-An RF sensor positioned at an event can pick up these broadcasts passively, no spectrum license required, and use them to build a real-time picture of every compliant drone in the area along with a fixed reference point for the operator. The limitation is enforcement: Remote ID only works on drones that follow the rules. A bad actor flying a modified or non-compliant drone won't show up in the broadcast feed, which is why pairing it with broader RF fingerprinting matters.
+Remote ID is the FAA’s broadcast identification standard for drones, similar in concept to ADS-B for manned aircraft. Compliant drones broadcast information like position, velocity, and a reference point for the operator over short-range radio.
+
+A passive RF sensor can pick this up without transmitting anything, which makes it a practical foundation for detection systems.
+
+The limitation is that it only works for compliant drones. If someone disables it or uses hardware that doesn’t follow the standard, you need additional techniques to detect them, which is where broader RF analysis comes in.
 
 ## Takeaway
 
-This was a small engagement in the context of the broader counter-drone space, but it was a useful window into a real operational gap. The combination of passive RF sensing and lightweight software filtering is a practical starting point, it's deployable quickly, doesn't require spectrum licensing, and gives responding officers something concrete to act on.
+This was a small window into a much larger problem space, but it highlighted something important: there’s a real operational gap, and it doesn’t require overly complex solutions to start addressing it.
 
-I'm still early to this space, but it's one I'm keeping an eye on. Consumer drones are getting cheaper and more capable every year, and the tools to manage that in sensitive environments are still catching up.
+Passive RF sensing paired with simple software can be deployed quickly, avoids regulatory overhead, and gives responders something concrete to work with.
+
+I’m still early to this space, but it’s one I’m paying close attention to. As drones become more capable and more common, the systems used to manage them will need to catch up.
